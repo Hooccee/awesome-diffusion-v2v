@@ -1,14 +1,14 @@
 # DOVER
 # install git lfs to pull the checkpoints from huggingface
 git lfs install
-git clone https://huggingface.co/teowu/DOVER checkpoints/
+git clone https://huggingface.co/teowu/DOVER checkpoints/DOVER/
 
 # ViCLIP
 # tokenizers
 wget https://raw.githubusercontent.com/openai/CLIP/main/clip/bpe_simple_vocab_16e6.txt.gz \
     -P checkpoints/ViCLIP
 # model weights
-wget https://pjlab-gvm-data.oss-cn-shanghai.aliyuncs.com/internvideo/viclip/ViClip-InternVid-10M-FLT.pth \
+wget http://10.191.78.209/ViClip-InternVid-10M-FLT.pth \
     -P checkpoints/ViCLIP
 
 # GMFlow

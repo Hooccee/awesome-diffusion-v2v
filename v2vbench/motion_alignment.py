@@ -80,12 +80,17 @@ class MotionAlignment(BaseEvaluator):
             logger.debug(f"Loading cached flow from {reference_flow_file}")
             reference_flow = torch.load(reference_flow_file, map_location=self.device)
         # cached flow not found, compute flow
-        except FileNotFoundError or AttributeError:
-            reference_flow_file = None
+        except (FileNotFoundError, AttributeError):
+            # 仅在需要缓存时生成路径，否则设为 None
+            if self.cache_flow:
+                reference_flow_file = self.get_flow_file(sample['reference_video_path'])
+            else:
+                reference_flow_file = None
             logger.debug(f"Flow file not found, loading reference frames.")
+            reference_frames = []
             for i, frame in enumerate(sample['reference_video']):
                 frame = torch.from_numpy(np.array(frame).astype(np.uint8)).permute(2, 0, 1).float().to(self.device)
-                frame = self.padder.pad(frame)[0][None]  # (B, C, H, W)
+                frame = self.padder.pad(frame)[0][None]
                 reference_frames.append(frame)
 
         return edit_frames, reference_frames, reference_flow_file, reference_flow
@@ -118,9 +123,14 @@ class MotionAlignment(BaseEvaluator):
         if reference_flow_file is None:
             reference_flow = self.extract_flow(reference_frames)
             if self.cache_flow:
+                # 确保路径有效（例如从其他参数生成）
+                if reference_flow_file is None:
+                    # 示例：假设 sample 中包含视频路径
+                    # reference_flow_file = self.get_flow_file(sample['reference_video_path'])
+                    raise ValueError("无法生成缓存路径，请检查 `preprocess` 逻辑。")
                 write_flow(reference_flow, reference_flow_file)
                 logger.debug(f"Flow saved to {reference_flow_file}")
 
         # calculate alignment score: EPE
         score = torch.sum((edit_flow - reference_flow) ** 2, dim=1).sqrt().mean().cpu().item()
-        return - score
+        return -score
