@@ -17,6 +17,7 @@ from third_party.gmflow.models import GMFlow
 from third_party.gmflow.utils import InputPadder, write_flow
 
 from .base_evaluator import BaseEvaluator
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +121,7 @@ class MotionAlignment(BaseEvaluator):
         edit_flow = self.extract_flow(edit_frames)
 
         # calculate flow for reference video if not cached
-        if reference_flow_file is None:
+        if reference_flow is None:
             reference_flow = self.extract_flow(reference_frames)
             if self.cache_flow:
                 # 确保路径有效（例如从其他参数生成）
@@ -128,6 +129,7 @@ class MotionAlignment(BaseEvaluator):
                     # 示例：假设 sample 中包含视频路径
                     # reference_flow_file = self.get_flow_file(sample['reference_video_path'])
                     raise ValueError("无法生成缓存路径，请检查 `preprocess` 逻辑。")
+                print(f"Saving flow to {reference_flow_file}")
                 write_flow(reference_flow, reference_flow_file)
                 logger.debug(f"Flow saved to {reference_flow_file}")
 

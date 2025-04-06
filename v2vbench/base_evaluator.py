@@ -9,11 +9,13 @@ import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from pathlib import Path
+import pprint
 from typing import Tuple, Union
 
 import torch
 from omegaconf import OmegaConf
 from tqdm.auto import tqdm
+from pprint import pprint
 
 from .utils import load_video
 
@@ -61,6 +63,24 @@ class BaseEvaluator(ABC):
             reference_video_path = None
             reference_video = None
         edit_video = load_video(self.edit_video_dir, stride=self.stride)
+
+        # ====== 新增帧数对齐逻辑 ======
+        if reference_video is not None:
+            # 获取两个视频的实际帧数
+            ref_len = len(reference_video)
+            edit_len = len(edit_video)
+            
+            # 如果帧数不一致，截取到较短的长度
+            if ref_len != edit_len:
+                min_frames = min(ref_len, edit_len)
+                logger.warning(
+                    f"Frame mismatch: reference_video({ref_len}) vs edit_video({edit_len}), "
+                    f"truncating to {min_frames} frames (video_id: {self.edit_video_dir.stem})"
+                )
+                reference_video = reference_video[:min_frames]
+                edit_video = edit_video[:min_frames]
+        # ====== 对齐逻辑结束 ======
+        
         yield {
             # for single video, the reference video may not be available
             # use the edit_video name as video_id
@@ -88,6 +108,26 @@ class BaseEvaluator(ABC):
             for edit_id, edit in enumerate(sample['edit']):
                 edit_video_path = self.edit_video_dir / sample['video_id'] / str(edit_id)
                 edit_video = load_video(edit_video_path, stride=self.stride)
+
+                # pprint(sample, width=80)
+
+                # ====== 新增帧数对齐逻辑 ======
+                if reference_video is not None:
+                    # 获取两个视频的实际帧数
+                    ref_len = len(reference_video)
+                    edit_len = len(edit_video)
+                    
+                    # 如果帧数不一致，截取到较短的长度
+                    if ref_len != edit_len:
+                        min_frames = min(ref_len, edit_len)
+                        logger.warning(
+                            f"Frame mismatch: reference_video({ref_len}) vs edit_video({edit_len}), "
+                            f"truncating to {min_frames} frames (video_id: {sample['video_id']})"
+                        )
+                        reference_video = reference_video[:min_frames]
+                        edit_video = edit_video[:min_frames]
+                # ====== 对齐逻辑结束 ======
+
                 yield {
                     'video_id': sample['video_id'],
                     # 'prompt': sample['prompt'],

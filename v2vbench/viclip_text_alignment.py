@@ -13,6 +13,7 @@ import torch
 from third_party.viclip import SimpleTokenizer, ViCLIP, clip_image_transform
 
 from .base_evaluator import BaseEvaluator
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -43,13 +44,14 @@ class ViclipTextAlignment(BaseEvaluator):
         self.model.to(self.device)
         self.model.eval()
         logger.debug(f"Model {self.model.__class__.__name__} loaded")
-
+        print('model loaded')
         self.image_transform = clip_image_transform(224)
 
     def range(self):
         return 0, 1
 
     def preprocess(self, sample):
+        # print(sample)
         text = sample['edit_prompt']
         video = sample['edit_video']
         
@@ -60,7 +62,7 @@ class ViclipTextAlignment(BaseEvaluator):
             frames.append(self.image_transform(frame))
         video_inputs = torch.stack(frames).to(self.device)[None] # (1, T, C, H, W)
         logger.debug(f"video_inputs shape: {video_inputs.shape}")
-
+        # print(sample)
         return text_inputs, video_inputs
 
     @torch.no_grad()

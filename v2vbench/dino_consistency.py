@@ -18,6 +18,7 @@ from .base_evaluator import BaseEvaluator
 logger = logging.getLogger(__name__)
 
 class DinoConsistency(BaseEvaluator):
+    # pretrained_model_name = '/data/chx/dinov2-base'
     pretrained_model_name = 'facebook/dinov2-base'
 
     def __init__(

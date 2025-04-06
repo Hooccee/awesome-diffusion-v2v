@@ -152,6 +152,7 @@ class EvaluatorWrapper:
         # merge the results into a single dataframe
         merged_results_df = self.merge_results(results)
         # aggregate into a single-row summary
+        print("Merged DataFrame Columns:", merged_results_df.columns.tolist())
         summary_df = merged_results_df[self.metrics].mean(axis=0).to_frame().T
         logger.info(reference_video.name)
         logger.info(summary_df)
