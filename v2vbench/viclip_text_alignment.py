@@ -51,18 +51,23 @@ class ViclipTextAlignment(BaseEvaluator):
         return 0, 1
 
     def preprocess(self, sample):
-        # print(sample)
+        # pprint(sample, width=80)
         text = sample['edit_prompt']
         video = sample['edit_video']
         
+        # 新增帧数截取逻辑
+        if len(video) > 8:  # 当视频帧数超过8时
+            logger.warning(f"Truncating {len(video)} frames to first 8 frames")
+            video = video[:8]  # 直接取前8帧
+            
         text_inputs = text
         
         frames = []
         for frame in video:
             frames.append(self.image_transform(frame))
-        video_inputs = torch.stack(frames).to(self.device)[None] # (1, T, C, H, W)
-        logger.debug(f"video_inputs shape: {video_inputs.shape}")
-        # print(sample)
+        video_inputs = torch.stack(frames).to(self.device)[None]  # (1, T, C, H, W)
+        
+        logger.debug(f"Processed video_inputs shape: {video_inputs.shape}")
         return text_inputs, video_inputs
 
     @torch.no_grad()

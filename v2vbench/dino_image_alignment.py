@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class DinoImageAlignment(BaseEvaluator):
     pretrained_model_name = 'facebook/dinov2-base'
+    # pretrained_model_name = '/data/chx/dinov2-base'
 
     def __init__(
         self,

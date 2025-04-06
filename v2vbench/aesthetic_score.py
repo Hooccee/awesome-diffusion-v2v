@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 class AestheticScore(BaseEvaluator):
     # pretrained_model_name = 'shunk031/aesthetics-predictor-v1-vit-large-patch14'  # v1
     pretrained_model_name = 'shunk031/aesthetics-predictor-v2-sac-logos-ava1-l14-linearMSE'  # v2
+    # pretrained_model_name = '/data/chx/aesthetics-predictor-v2-sac-logos-ava1-l14-linearMSE'  # v2
 
     def __init__(
         self,

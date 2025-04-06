@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 class PickScore(BaseEvaluator):
     pretrained_processor_name = "laion/CLIP-ViT-H-14-laion2B-s32B-b79K"
     pretrained_model_name = 'yuvalkirstain/PickScore_v1'
+    # pretrained_processor_name = "/data/chx/CLIP-ViT-H-14-laion2B-s32B-b79K"
+    # pretrained_model_name = '/data/chx/PickScore_v1'
 
     def __init__(
         self,

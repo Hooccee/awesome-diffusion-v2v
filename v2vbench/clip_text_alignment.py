@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class ClipTextAlignment(BaseEvaluator):
     pretrained_model_name = 'openai/clip-vit-large-patch14'
+    # pretrained_model_name = '/data/chx/clip-vit-large-patch14'
 
     def __init__(
         self,
